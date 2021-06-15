@@ -35,21 +35,10 @@ defmodule Tetris.Tetromino do
     tetro
     |> points()
     |> Points.move(tetro.location)
+    |> Points.add_shape(tetro.shape)
   end
 
-  def points(%{shape: :l}), do: Shapes.shape_l()
-
-  def points(%{shape: :j}), do: Shapes.shape_j()
-
-  def points(%{shape: :o}), do: Shapes.shape_o()
-
-  def points(%{shape: :i}), do: Shapes.shape_i()
-
-  def points(%{shape: :t}), do: Shapes.shape_t()
-
-  def points(%{shape: :s}), do: Shapes.shape_s()
-
-  def points(%{shape: :z}), do: Shapes.shape_z()
+  def points(tetro), do: Shapes.shape(tetro.shape)
 
   defp random_shape do
     Enum.random(@shapes)
