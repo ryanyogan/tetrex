@@ -17,14 +17,9 @@ defmodule TetrisWeb.GameLive do
   @impl true
   def render(assigns) do
     ~L"""
-    <section class="phx-hero">
+    <section class="phx-hero" style="background: #fff;">
       <h1>Tetris!</h1>
       <%= render_board(assigns) %>
-
-      <pre>
-        shape: <%= @tetro.shape %>
-        rotation: <%= @tetro.rotation %>
-      </pre>
     </section>
     """
   end
