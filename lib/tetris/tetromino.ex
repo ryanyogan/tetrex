@@ -41,6 +41,12 @@ defmodule Tetris.Tetromino do
 
   def points(tetro), do: Shapes.shape(tetro.shape)
 
+  def maybe_move(_old, new, true = _valid),
+    do: new
+
+  def maybe_move(old, _new, false = _valid),
+    do: old
+
   defp random_shape do
     Enum.random(@shapes)
   end
