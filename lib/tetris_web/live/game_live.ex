@@ -1,17 +1,14 @@
 defmodule TetrisWeb.GameLive do
   use TetrisWeb, :live_view
-  alias Tetris.{Tetromino, Shapes}
+  alias Tetris.{Tetromino, Game, Shapes}
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket) do
-      :timer.send_interval(500, :tick)
-    end
+    # if connected?(socket) do
+    #   :timer.send_interval(500, :tick)
+    # end
 
-    {:ok,
-     socket
-     |> new_tetromino()
-     |> show()}
+    {:ok, new_game(socket)}
   end
 
   @impl true
@@ -37,7 +34,7 @@ defmodule TetrisWeb.GameLive do
 
   defp render_shapes(assigns) do
     ~L"""
-      <%= for {x, y, shape} <- @points do %>
+      <%= for {x, y, shape} <- @game.points do %>
         <rect width="20" height="20" x="<%= (x - 1) * 20 %>" y="<%= (y - 1) * 20 %>" style="fill:<%= color(shape) %>;" />
       <% end %>
     """
@@ -55,14 +52,14 @@ defmodule TetrisWeb.GameLive do
     |> assign(tetro: Tetromino.down(tetro))
   end
 
-  def left(%{assigns: %{tetro: tetro}} = socket) do
+  def left(%{assigns: %{game: game}} = socket) do
     socket
-    |> assign(tetro: Tetromino.left(tetro))
+    |> assign(game: Game.left(game))
   end
 
-  def right(%{assigns: %{tetro: tetro}} = socket) do
+  def right(%{assigns: %{game: game}} = socket) do
     socket
-    |> assign(tetro: Tetromino.right(tetro))
+    |> assign(game: Game.right(game))
   end
 
   def show(%{assigns: %{tetro: tetro}} = socket) do
@@ -75,30 +72,35 @@ defmodule TetrisWeb.GameLive do
     |> assign(tetro: Tetromino.rotate(tetro))
   end
 
+  defp new_game(socket) do
+    socket
+    |> assign(game: Game.new())
+  end
+
   defp new_tetromino(socket) do
     socket
-    |> assign(tetro: Tetromino.new_random())
+    |> assign(game: Game.new_tetromino(socket.assigns.game))
   end
 
   @impl true
   def handle_info(:tick, socket) do
-    {:noreply, socket |> down() |> show()}
+    {:noreply, socket |> down()}
   end
 
   @rotate_keys [" ", "ArrowDown"]
   @impl true
   def handle_event("keystroke", %{"key" => key}, socket) when key in @rotate_keys do
-    {:noreply, socket |> rotate() |> show()}
+    {:noreply, socket |> rotate()}
   end
 
   @impl true
   def handle_event("keystroke", %{"key" => "ArrowLeft"}, socket) do
-    {:noreply, socket |> left() |> show()}
+    {:noreply, socket |> left()}
   end
 
   @impl true
   def handle_event("keystroke", %{"key" => "ArrowRight"}, socket) do
-    {:noreply, socket |> right() |> show()}
+    {:noreply, socket |> right()}
   end
 
   @impl true
