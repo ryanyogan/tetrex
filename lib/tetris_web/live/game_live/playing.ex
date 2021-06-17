@@ -61,9 +61,16 @@ defmodule TetrisWeb.GameLive.Playing do
     |> assign(game: Game.new())
   end
 
+  defp maybe_end_game(%{assigns: %{game: %{game_over: true}}} = socket) do
+    socket
+    |> push_redirect(to: "/game/over")
+  end
+
+  defp maybe_end_game(socket), do: socket
+
   @impl true
   def handle_info(:tick, socket) do
-    {:noreply, socket |> down()}
+    {:noreply, socket |> down() |> maybe_end_game()}
   end
 
   @rotate_keys [" ", "ArrowUp"]
