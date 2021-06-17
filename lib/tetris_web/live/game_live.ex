@@ -4,9 +4,9 @@ defmodule TetrisWeb.GameLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    # if connected?(socket) do
-    #   :timer.send_interval(500, :tick)
-    # end
+    if connected?(socket) do
+      :timer.send_interval(500, :tick)
+    end
 
     {:ok, new_game(socket)}
   end
@@ -42,14 +42,14 @@ defmodule TetrisWeb.GameLive do
 
   defp color(shape), do: Shapes.color(shape)
 
-  def down(%{assigns: %{tetro: %{location: {_, 20}}}} = socket) do
+  def down(%{assigns: %{game: %{tetro: %{location: {_, 20}}}}} = socket) do
     socket
     |> new_tetromino()
   end
 
-  def down(%{assigns: %{tetro: tetro}} = socket) do
+  def down(%{assigns: %{game: game}} = socket) do
     socket
-    |> assign(tetro: Tetromino.down(tetro))
+    |> assign(game: Game.down(game))
   end
 
   def left(%{assigns: %{game: game}} = socket) do
@@ -67,9 +67,9 @@ defmodule TetrisWeb.GameLive do
     |> assign(points: Tetromino.show(tetro))
   end
 
-  def rotate(%{assigns: %{tetro: tetro}} = socket) do
+  def rotate(%{assigns: %{game: game}} = socket) do
     socket
-    |> assign(tetro: Tetromino.rotate(tetro))
+    |> assign(game: Game.rotate(game))
   end
 
   defp new_game(socket) do
@@ -87,7 +87,7 @@ defmodule TetrisWeb.GameLive do
     {:noreply, socket |> down()}
   end
 
-  @rotate_keys [" ", "ArrowDown"]
+  @rotate_keys [" ", "ArrowUp"]
   @impl true
   def handle_event("keystroke", %{"key" => key}, socket) when key in @rotate_keys do
     {:noreply, socket |> rotate()}
