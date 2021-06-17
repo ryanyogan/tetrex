@@ -20,6 +20,7 @@ defmodule TetrisWeb.GameLive do
         <h1>Tetris!</h1>
         <%= render_board(assigns) %>
       </div>
+      <%= inspect @game %>
     </section>
     """
   end
@@ -35,7 +36,7 @@ defmodule TetrisWeb.GameLive do
 
   defp render_shapes(assigns) do
     ~L"""
-      <%= for {x, y, shape} <- @game.points do %>
+      <%= for {x, y, shape} <- @game.points ++ Game.junkyard_points(@game) do %>
         <rect width="20" height="20" x="<%= (x - 1) * 20 %>" y="<%= (y - 1) * 20 %>" style="fill:<%= color(shape) %>;" />
       <% end %>
     """
