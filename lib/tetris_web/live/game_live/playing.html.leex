@@ -1,0 +1,8 @@
+    <section class="phx-hero" style="background: #fff;">
+      <div phx-window-keydown="keystroke">
+        <h1>Tetris!</h1>
+        <h4>Score: <%= @game.score %></h4>
+        <%= render_board(assigns) %>
+      </div>
+      <%= inspect @game %>
+    </section>

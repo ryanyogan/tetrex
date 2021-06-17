@@ -1,6 +1,6 @@
 defmodule Tetris.Game do
   @moduledoc false
-  defstruct [:tetro, points: [], score: 0, junkyard: %{}]
+  defstruct [:tetro, points: [], score: 0, junkyard: %{}, game_over: false]
 
   alias Tetris.{Tetromino, Points}
 
@@ -29,7 +29,7 @@ defmodule Tetris.Game do
     valid_move? =
       new_tetro
       |> Tetromino.show()
-      |> Points.valid?()
+      |> Points.valid?(game.junkyard)
 
     {old_tetro, new_tetro, valid_move?}
   end
@@ -43,6 +43,7 @@ defmodule Tetris.Game do
   def move_down_or_merge(game, _old, new, true = _valid?) do
     %{game | tetro: new}
     |> show()
+    |> inc_score(1)
   end
 
   def move_down_or_merge(game, old, _new, false = _valid?) do
@@ -50,6 +51,7 @@ defmodule Tetris.Game do
     |> merge(old)
     |> new_tetromino()
     |> show()
+    |> check_game_over()
   end
 
   def merge(game, old) do
@@ -77,5 +79,18 @@ defmodule Tetris.Game do
 
   def show(game) do
     %{game | points: Tetromino.show(game.tetro)}
+  end
+
+  def inc_score(game, value) do
+    %{game | score: game.score + value}
+  end
+
+  def check_game_over(game) do
+    continue_game =
+      game.tetro
+      |> Tetromino.show()
+      |> Points.valid?(game.junkyard)
+
+    %{game | game_over: !continue_game}
   end
 end

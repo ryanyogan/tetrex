@@ -1,7 +1,7 @@
-defmodule TetrisWeb.GameLive do
+defmodule TetrisWeb.GameLive.Playing do
   @moduledoc false
   use TetrisWeb, :live_view
-  alias Tetris.{Tetromino, Game, Shapes}
+  alias Tetris.{Game, Shapes}
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,19 +10,6 @@ defmodule TetrisWeb.GameLive do
     end
 
     {:ok, new_game(socket)}
-  end
-
-  @impl true
-  def render(assigns) do
-    ~L"""
-    <section class="phx-hero" style="background: #fff;">
-      <div phx-window-keydown="keystroke">
-        <h1>Tetris!</h1>
-        <%= render_board(assigns) %>
-      </div>
-      <%= inspect @game %>
-    </section>
-    """
   end
 
   defp render_board(assigns) do
@@ -59,9 +46,9 @@ defmodule TetrisWeb.GameLive do
     |> assign(game: Game.right(game))
   end
 
-  def show(%{assigns: %{tetro: tetro}} = socket) do
+  def show(%{assigns: %{game: game}} = socket) do
     socket
-    |> assign(points: Tetromino.show(tetro))
+    |> assign(game: Game.show(game))
   end
 
   def rotate(%{assigns: %{game: game}} = socket) do
@@ -73,12 +60,6 @@ defmodule TetrisWeb.GameLive do
     socket
     |> assign(game: Game.new())
   end
-
-  # TODO: Most likely delete this block
-  # defp new_tetromino(socket) do
-  #   socket
-  #   |> assign(game: Game.new_tetromino(socket.assigns.game))
-  # end
 
   @impl true
   def handle_info(:tick, socket) do
