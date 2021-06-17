@@ -1,4 +1,5 @@
 defmodule Tetris.Game do
+  @moduledoc false
   defstruct [:tetro, points: [], score: 0, junkyard: %{}]
 
   alias Tetris.{Tetromino, Points}
@@ -10,6 +11,15 @@ defmodule Tetris.Game do
   end
 
   def move(game, move_fn) do
+    {old_tetro, new_tetro, valid_move?} = move_data(game, move_fn)
+
+    moved = Tetromino.maybe_move(old_tetro, new_tetro, valid_move?)
+
+    %{game | tetro: moved}
+    |> show()
+  end
+
+  defp move_data(game, move_fn) do
     old_tetro = game.tetro
 
     new_tetro =
@@ -21,13 +31,31 @@ defmodule Tetris.Game do
       |> Tetromino.show()
       |> Points.valid?()
 
-    moved = Tetromino.maybe_move(old_tetro, new_tetro, valid_move?)
+    {old_tetro, new_tetro, valid_move?}
+  end
 
-    %{game | tetro: moved}
+  def down(game) do
+    {old_tetro, new_tetro, valid_move?} = move_data(game, &Tetromino.down/1)
+
+    move_down_or_merge(game, old_tetro, new_tetro, valid_move?)
+  end
+
+  def move_down_or_merge(game, _old, new, true = _valid?) do
+    %{game | tetro: new}
     |> show()
   end
 
-  def down(game), do: game |> move(&Tetromino.down/1)
+  def move_down_or_merge(game, old, _new, false = _valid?) do
+    game
+    |> merge(old)
+    |> new_tetromino()
+    |> show()
+  end
+
+  def merge(game, old) do
+    game
+  end
+
   def right(game), do: game |> move(&Tetromino.right/1)
   def left(game), do: game |> move(&Tetromino.left/1)
   def rotate(game), do: game |> move(&Tetromino.rotate/1)

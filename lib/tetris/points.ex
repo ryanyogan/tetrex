@@ -1,4 +1,5 @@
 defmodule Tetris.Points do
+  @moduledoc false
   alias Tetris.Point
 
   def move(points, change) do

@@ -1,4 +1,5 @@
 defmodule TetrisWeb.GameLive do
+  @moduledoc false
   use TetrisWeb, :live_view
   alias Tetris.{Tetromino, Game, Shapes}
 
@@ -42,11 +43,6 @@ defmodule TetrisWeb.GameLive do
 
   defp color(shape), do: Shapes.color(shape)
 
-  def down(%{assigns: %{game: %{tetro: %{location: {_, 20}}}}} = socket) do
-    socket
-    |> new_tetromino()
-  end
-
   def down(%{assigns: %{game: game}} = socket) do
     socket
     |> assign(game: Game.down(game))
@@ -77,10 +73,11 @@ defmodule TetrisWeb.GameLive do
     |> assign(game: Game.new())
   end
 
-  defp new_tetromino(socket) do
-    socket
-    |> assign(game: Game.new_tetromino(socket.assigns.game))
-  end
+  # TODO: Most likely delete this block
+  # defp new_tetromino(socket) do
+  #   socket
+  #   |> assign(game: Game.new_tetromino(socket.assigns.game))
+  # end
 
   @impl true
   def handle_info(:tick, socket) do
