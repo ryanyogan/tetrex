@@ -63,7 +63,7 @@ defmodule TetrisWeb.GameLive.Playing do
 
   defp maybe_end_game(%{assigns: %{game: %{game_over: true}}} = socket) do
     socket
-    |> push_redirect(to: "/game/over")
+    |> push_redirect(to: "/game/over?score=#{socket.assigns.game.score}")
   end
 
   defp maybe_end_game(socket), do: socket
